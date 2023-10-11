@@ -41,6 +41,7 @@ jobs:
       - name: Build and push NFT Explorer
         uses: docker/build-push-action@master
         with:
+          file: Dockerfile-explorer
           push: true
           tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}-explorer:latest
   

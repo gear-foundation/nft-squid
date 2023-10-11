@@ -71,6 +71,8 @@ jobs:
           file: Dockerfile
           push: true
           tags: ${{ needs.prepair.outputs.image_name }}
+          build-args: |
+            DB_PASSWORD=${{ secrets.DB_PASSWORD }}
 
   deploy-to-k8s:
     needs: [prepair, build-and-push-image]

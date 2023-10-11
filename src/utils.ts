@@ -1,3 +1,5 @@
+import config from "./config";
+
 export function getDate(ts: string) {
   const date = new Date(Number(ts));
   return `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate().toString().padStart(2, '0')} ${date
@@ -14,7 +16,7 @@ export async function gearReadStateReq(programId: string, payload: string) {
     params: [programId, payload],
   };
 
-  const response = await fetch('https://testnet.vara-network.io', {
+  const response = await fetch(config.node.address, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',

@@ -16,4 +16,7 @@ export default {
   archive: {
     uri: getEnv('ARCHIVE_URI'),
   },
+  node: {
+    address: getEnv('NODE_ADDRESS'),
+  },
 };

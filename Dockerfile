@@ -6,4 +6,4 @@ RUN rm .env*
 RUN npm install
 RUN npm run build
 
-CMD ["npm", "start"]
+CMD ["node", "dist/index.js"]

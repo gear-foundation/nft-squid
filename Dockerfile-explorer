@@ -2,4 +2,4 @@ FROM node:18-alpine
 
 RUN npm i -g @subsquid/cli@latest
 
-CMD ["sqd", "serve"]
+CMD ["sqd", "serve:prod"]

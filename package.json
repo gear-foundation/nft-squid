@@ -7,7 +7,9 @@
   "scripts": {
     "build": "rm -rf lib && tsc",
     "migration:generate": "squid-typeorm-migration generate",
-    "migration:apply": "squid-typeorm-migration apply"
+    "migration:apply": "squid-typeorm-migration apply",
+    "serve": "squid-graphql-server serve",
+    "start": "npm run migration:apply && node lib/main.js"
   },
   "dependencies": {
     "@gear-js/api": "^0.34.0",

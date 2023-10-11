@@ -1,5 +1,6 @@
 FROM node:18-alpine
 
 RUN npm i -g @subsquid/cli@latest
+RUN npm i -g @subsquid/commands && mv $(which squid-commands) /usr/local/bin/sqd
 
 CMD ["sqd", "serve:prod"]

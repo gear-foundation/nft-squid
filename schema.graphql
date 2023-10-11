@@ -1,0 +1,36 @@
+type Account @entity {
+  id: ID!
+  nfts: [Nft!]! @derivedFrom(field: "owner")
+  approvedNfts: [Nft!]! @derivedFrom(field: "approvedAccount")
+}
+
+type Transfer @entity {
+  id: ID!
+  from: Account!
+  to: Account!
+  nft: Nft!
+  timestamp: DateTime!
+  blockNumber: BigInt!
+}
+
+type Nft @entity {
+  id: ID!
+  tokenId: String!
+  owner: Account!
+  collection: NftCollection!
+  description: String!
+  name: String!
+  mediaUrl: String!
+  attribUrl: JSON!
+  transfers: [Transfer!]! @derivedFrom(field: "nft")
+  mintedAt: DateTime!
+  mintedAtBlock: BigInt!
+  approvedAccount: Account
+}
+
+type NftCollection @entity {
+  id: ID!
+  name: String!
+  description: String!
+  nfts: [Nft!]! @derivedFrom(field: "collection")
+}

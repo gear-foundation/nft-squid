@@ -1,4 +1,4 @@
-name: Build and Deploy Indexer NFT Squid
+name: Build and Deploy NFT Indexer
 
 on:
   workflow_dispatch:
@@ -17,7 +17,7 @@ env:
   KUBE_CONFIG_DATA: ${{ secrets.KUBE_CONFIG_DATA }}
   KUBECTL_VERSION: "v1.22.17"
   KUBE_NAMESPACE: vara
-  KUBE_DEPLOYMENT_PREFIX: indexer-nft
+  KUBE_DEPLOYMENT_PREFIX: nft-indexer
   REGISTRY: ghcr.io/${{ github.repository }}
 
 jobs:
@@ -68,7 +68,7 @@ jobs:
       - name: Build and push image
         uses: docker/build-push-action@v4
         with:
-          file: Dockerfile
+          file: Dockerfile-indexer
           push: true
           tags: ${{ needs.prepair.outputs.image_name }}
           build-args: |

@@ -47,6 +47,8 @@ export interface MasterNftEvent extends Enum {
 }
 
 export interface StateReply extends Enum {
+  isStorageIds: boolean;
+  asStorageIds: Vec<Hash>;
   isName: boolean;
   asName: Text;
   isDescription: boolean;

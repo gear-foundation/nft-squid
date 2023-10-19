@@ -29,10 +29,18 @@ export class BatchState {
   }
 
   async save() {
-    await this.store.save(Array.from(this.accounts.values()));
-    await this.store.save(Array.from(this.collections.values()));
-    await this.store.save(Array.from(this.nfts.values()));
-    await this.store.save(Array.from(this.transfers.values()));
+    if (this.accounts.size > 0) {
+      await this.store.save(Array.from(this.accounts.values()));
+    }
+    if (this.collections.size > 0) {
+      await this.store.save(Array.from(this.collections.values()));
+    }
+    if (this.nfts.size > 0) {
+      await this.store.save(Array.from(this.nfts.values()));
+    }
+    if (this.transfers.size > 0) {
+      await this.store.save(Array.from(this.transfers.values()));
+    }
     if (this.burntNfts.size > 0) {
       const transfers = await this.store.findBy(Transfer, { nft: { id: In(Array.from(this.burntNfts.keys())) } });
       await this.store.remove(transfers);
@@ -44,10 +52,11 @@ export class BatchState {
     if (this.accounts.has(address)) {
       return this.accounts.get(address);
     }
-    let account = await this.store.findOneBy(Account, { id: address });
+    let account = null;
+    // await this.store.findOneBy(Account, { id: address });
 
     if (!account) {
-      account = new Account({ id: address, nfts: [] });
+      account = new Account({ id: address });
     }
 
     this.accounts.set(address, account);
@@ -101,13 +110,14 @@ export class BatchState {
     attribUrl: string[],
     blockNumber: bigint,
     timestamp: Date,
+    mint = true,
   ) {
     const id = `${collection.id}-${tokenId}`;
 
     const owner = await this.getAccount(ownerAddress);
-    let nft =
-      (await this.getNft(id)) ||
-      new Nft({ id, collection, mintedAt: timestamp, mintedAtBlock: blockNumber, tokenId, transfers: [] });
+    let nft = mint
+      ? new Nft({ id, collection, mintedAt: timestamp, mintedAtBlock: blockNumber, tokenId, transfers: [] })
+      : await this.getNft(id);
 
     nft.owner = owner;
     nft.description = description;

@@ -1,35 +1,21 @@
 import { ProgramMetadata } from '@gear-js/api';
 import { BatchState } from '../batchState';
 import { readFileSync } from 'fs';
-import { MasterNftEvent, StateReply } from '../types';
+import { MasterNftEvent } from '../types';
 import { getDate } from '../utils';
-import { HumanTypesRepr } from '@gear-js/api';
 import config from '../config';
-import { gearReadStateReq } from '../utils';
-
-async function getCollectionName(meta: ProgramMetadata) {
-  const payload = '0x07';
-  const result = await gearReadStateReq(config.nfts.cb, payload);
-  const data = meta.createType<StateReply>((meta.types.state as HumanTypesRepr).output, result);
-  if (data.isName) {
-    return data.asName.toString();
-  }
-  throw new Error('Invalid state');
-}
-
-async function getCollectionDescription(meta: ProgramMetadata) {
-  const payload = '0x08';
-  const result = await gearReadStateReq(config.nfts.cb, payload);
-  const data = meta.createType<StateReply>((meta.types.state as HumanTypesRepr).output, result);
-  if (data.isDescription) {
-    return data.asDescription.toString();
-  }
-  throw new Error('Invalid state');
-}
+import { getCollectionDescription, getCollectionName } from './helpers';
 
 const meta = ProgramMetadata.from(readFileSync('./assets/cb-nft.meta.txt', 'utf8'));
 
-export async function cbNftHandler(state: BatchState, payload: string, source: string, blockNumber: bigint, ts: Date) {
+export async function cbNftHandler(
+  state: BatchState,
+  payload: string,
+  source: string,
+  blockNumber: bigint,
+  ts: Date,
+  linkIsFull = false,
+) {
   const data = meta.createType<MasterNftEvent>(meta.types.others.output, payload);
   if (data.isMinted || data.isNftChanged) {
     const action = data.isMinted ? data.asMinted : data.asNftChanged;
@@ -38,18 +24,19 @@ export async function cbNftHandler(state: BatchState, payload: string, source: s
     let collection = await state.getCollection(source);
     if (!collection) {
       const [collectionName, collectionDesc] = await Promise.all([
-        getCollectionName(meta),
-        getCollectionDescription(meta),
+        getCollectionName(meta, config.nfts.cb),
+        getCollectionDescription(meta, config.nfts.cb),
       ]);
       collection = state.newCollection(source, collectionName, collectionDesc);
     }
+
     await state.mintNft(
       tokenId,
       collection,
       owner.toHex(),
       collection.description,
       collection.name + ' - ' + media.toString(),
-      `${link.toString()}/${tokenId}.png`,
+      linkIsFull ? link.toString() : `${link.toString()}/${tokenId}.png`,
       activities.map(([name, times, ts]) => {
         const timesFormatted = name.toString() === 'NFT minted' ? ', ' : ` ${times.toString()} times, `;
         const date = getDate(ts.toString());
@@ -58,6 +45,7 @@ export async function cbNftHandler(state: BatchState, payload: string, source: s
       }),
       blockNumber,
       ts,
+      data.isMinted,
     );
   } else if (data.isTransferred) {
     const { tokenId, owner, recipient } = data.asTransferred;

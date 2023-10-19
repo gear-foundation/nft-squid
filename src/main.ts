@@ -4,13 +4,22 @@ import { UserMessageSentArgs } from './types';
 import config from './config';
 import { BatchState } from './batchState';
 import { cbNftHandler } from './handlers/cb-nft';
+import { readMigratedNfts } from './handlers/vit-nft';
 
-const programs = [config.nfts.cb];
+const programs = [config.nfts.cb, config.nfts.vit];
+
+let isMigratedNftsSaved = !config.nfts.readMigrateNfts;
 
 const state = new BatchState();
 
 processor.run(new TypeormDatabase(), async (ctx) => {
   state.newBatch(ctx.store);
+
+  if (!isMigratedNftsSaved) {
+    await readMigratedNfts(state);
+    isMigratedNftsSaved = true;
+    state.newBatch(ctx.store);
+  }
 
   for (const block of ctx.blocks) {
     const blockNumber = BigInt(block.header.height);
@@ -26,7 +35,7 @@ processor.run(new TypeormDatabase(), async (ctx) => {
       if (payload === '0x') continue;
       if (details && details.code.__kind !== 'Success') continue;
 
-      if (source === config.nfts.cb) {
+      if (programs.includes(source)) {
         await cbNftHandler(state, payload, source, blockNumber, ts);
       }
     }

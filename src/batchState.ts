@@ -104,25 +104,32 @@ export class BatchState {
     tokenId: string,
     collection: NftCollection,
     ownerAddress: string,
-    description: string,
-    name: string,
-    mediaUrl: string,
     attribUrl: string[],
-    blockNumber: bigint,
-    timestamp: Date,
+    description?: string,
+    name?: string,
+    mediaUrl?: string,
+    blockNumber?: bigint,
+    timestamp?: Date,
     mint = true,
   ) {
     const id = `${collection.id}-${tokenId}`;
 
     const owner = await this.getAccount(ownerAddress);
     let nft = mint
-      ? new Nft({ id, collection, mintedAt: timestamp, mintedAtBlock: blockNumber, tokenId, transfers: [] })
+      ? new Nft({
+          id,
+          collection,
+          mintedAt: timestamp,
+          mintedAtBlock: blockNumber,
+          tokenId,
+          transfers: [],
+          mediaUrl,
+          name,
+          description,
+          owner,
+        })
       : await this.getNft(id);
 
-    nft.owner = owner;
-    nft.description = description;
-    nft.name = name;
-    nft.mediaUrl = mediaUrl;
     nft.attribUrl = attribUrl;
 
     this.nfts.set(`${collection.id}-${tokenId}`, nft);

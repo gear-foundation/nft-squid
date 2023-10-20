@@ -34,15 +34,15 @@ export async function cbNftHandler(
       tokenId,
       collection,
       owner.toHex(),
-      collection.description,
-      collection.name + ' - ' + media.toString(),
-      linkIsFull ? link.toString() : `${link.toString()}/${tokenId}.png`,
       activities.map(([name, times, ts]) => {
         const timesFormatted = name.toString() === 'NFT minted' ? ', ' : ` ${times.toString()} times, `;
         const date = getDate(ts.toString());
         const dateFormatted = name.toString() === 'NFT minted' ? `date: ${date}` : `last game date: ${date}`;
         return `${name}${timesFormatted}${dateFormatted}`;
       }),
+      collection.description,
+      collection.name + ' - ' + media.toString(),
+      linkIsFull ? link.toString() : `${link.toString()}/${tokenId}.png`,
       blockNumber,
       ts,
       data.isMinted,

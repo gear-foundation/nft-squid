@@ -15,7 +15,7 @@ export default {
     vit: getEnv('NFT_VIT'),
     vitMigratedAtBlock: getEnv('VIT_MIGRATED_AT_BLOCK'),
     vitMigratedTS: Number(getEnv('VIT_MIGRATED_TS')),
-    readMigrateNfts: Boolean(getEnv('READ_MIGRATED_NFTS')),
+    readMigrateNfts: Boolean(getEnv('READ_MIGRATED_NFTS', '')),
   },
   archive: {
     uri: getEnv('ARCHIVE_URI'),

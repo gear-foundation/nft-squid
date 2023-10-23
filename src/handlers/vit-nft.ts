@@ -36,15 +36,15 @@ export async function readMigratedNfts(state: BatchState) {
             media.toString(),
             collection,
             owner.toHex(),
-            description,
-            name + ' - ' + media.toString(),
-            link.toString(),
             activities.map(([name, times, ts]) => {
               const timesFormatted = name.toString() === 'NFT minted' ? ', ' : ` ${times.toString()} times, `;
               const date = getDate(ts.toString());
               const dateFormatted = name.toString() === 'NFT minted' ? `date: ${date}` : `last game date: ${date}`;
               return `${name}${timesFormatted}${dateFormatted}`;
             }),
+            description,
+            name + ' - ' + media.toString(),
+            link.toString(),
             blockNumber,
             timestamp,
           );

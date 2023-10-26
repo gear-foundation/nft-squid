@@ -19,7 +19,7 @@ export const processor = new SubstrateBatchProcessor()
       },
     },
   } as const)
-  .setBlockRange({ from: 513000 });
+  .setBlockRange({ from: config.archive.fromBlock });
 
 export type Item = BatchProcessorItem<typeof processor>;
 export type EventItem = BatchProcessorEventItem<typeof processor>;

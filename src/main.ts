@@ -5,6 +5,7 @@ import config from './config';
 import { BatchState } from './batchState';
 import { cbNftHandler } from './handlers/cb-nft';
 import { readMigratedNfts } from './handlers/vit-nft';
+import { draftNftHandler } from './handlers/draft-nft';
 
 const programs = [config.nfts.cb, config.nfts.vit];
 
@@ -37,6 +38,8 @@ processor.run(new TypeormDatabase(), async (ctx) => {
 
       if (programs.includes(source)) {
         await cbNftHandler(state, payload, source, blockNumber, ts);
+      } else if (source === config.nfts.draft) {
+        await draftNftHandler(state, payload, source, blockNumber, ts);
       }
     }
   }

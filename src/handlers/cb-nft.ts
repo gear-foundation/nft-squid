@@ -3,7 +3,6 @@ import { BatchState } from '../batchState';
 import { readFileSync } from 'fs';
 import { MasterNftEvent } from '../types';
 import { getDate } from '../utils';
-import config from '../config';
 import { getCollectionDescription, getCollectionName } from './helpers';
 
 const meta = ProgramMetadata.from(readFileSync('./assets/cb-nft.meta.txt', 'utf8'));
@@ -24,8 +23,8 @@ export async function cbNftHandler(
     let collection = await state.getCollection(source);
     if (!collection) {
       const [collectionName, collectionDesc] = await Promise.all([
-        getCollectionName(meta, config.nfts.cb),
-        getCollectionDescription(meta, config.nfts.cb),
+        getCollectionName(meta, source),
+        getCollectionDescription(meta, source),
       ]);
       collection = state.newCollection(source, collectionName, collectionDesc);
     }

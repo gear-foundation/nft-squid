@@ -8,6 +8,11 @@ import { readMigratedNfts } from './handlers/vit-nft';
 import { draftNftHandler } from './handlers/draft-nft';
 
 const programs = [config.nfts.cb, config.nfts.vit];
+const simpleNfts = [config.nfts.draft];
+
+if (config.nfts.old !== '') {
+  simpleNfts.push(...config.nfts.old.split(','));
+}
 
 let isMigratedNftsSaved = !config.nfts.readMigrateNfts;
 
@@ -38,7 +43,7 @@ processor.run(new TypeormDatabase(), async (ctx) => {
 
       if (programs.includes(source)) {
         await cbNftHandler(state, payload, source, blockNumber, ts);
-      } else if (source === config.nfts.draft) {
+      } else if (simpleNfts.includes(source)) {
         await draftNftHandler(state, payload, source, blockNumber, ts);
       }
     }

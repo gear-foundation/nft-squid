@@ -2,7 +2,6 @@ import { ProgramMetadata } from '@gear-js/api';
 import { BatchState } from '../batchState';
 import { readFileSync } from 'fs';
 import { DraftNftEvent } from '../types';
-import config from '../config';
 import { getCollectionDescription, getCollectionName } from './helpers';
 
 const meta = ProgramMetadata.from(readFileSync('./assets/draft-nft.meta.txt', 'utf8'));
@@ -20,8 +19,8 @@ export async function draftNftHandler(
     let collection = await state.getCollection(source);
     if (!collection) {
       const [collectionName, collectionDesc] = await Promise.all([
-        getCollectionName(meta, config.nfts.draft, '0x00'),
-        getCollectionDescription(meta, config.nfts.draft, '0x01'),
+        getCollectionName(meta, source, '0x00'),
+        getCollectionDescription(meta, source, '0x01'),
       ]);
       collection = state.newCollection(source, collectionName, collectionDesc);
     }

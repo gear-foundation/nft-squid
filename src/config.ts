@@ -19,8 +19,9 @@ export default {
     readMigrateNfts: Boolean(getEnv('READ_MIGRATED_NFTS', '')),
     old: getEnv('NFT_OLD', ''),
   },
-  archive: {
-    uri: getEnv('ARCHIVE_URI'),
+  squid: {
+    archive: getEnv('SQUID_ARCHIVE'),
+    node: getEnv('VARA_NODE'),
     fromBlock: Number(getEnv('INDEX_FROM_BLOCK', '0')),
   },
   node: {

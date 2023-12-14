@@ -8,7 +8,6 @@ export const indexedNfts = [config.nfts.cb, config.nfts.vit, config.nfts.draft];
 if (config.nfts.old !== '') {
   indexedNfts.push(...config.nfts.old.split(','));
 }
-console.log(config.squid.archive);
 
 export const processor = new SubstrateBatchProcessor()
   .setDataSource({

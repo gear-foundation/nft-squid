@@ -29,24 +29,16 @@ export async function readMigratedNfts(state: BatchState) {
 
   const batchSize = 5;
   for (let i = 0; i < storages.length; i += batchSize) {
-    console.log(`Reading storage ${i + 1} - ${i + batchSize} of ${storages.length}`);
-
-    console.log(storages.slice(i, i + batchSize));
     const [tokens, links] = await Promise.all([
       gearReadStateBatchReq(storages.slice(i, i + batchSize), '0x02'),
       gearReadStateBatchReq(storages.slice(i, i + batchSize), '0x06'),
     ]);
-    console.log(links);
 
     for (let j = 0; j < batchSize; j++) {
       const data = nftMeta.createType<StorageStateReply>((nftMeta.types.state as HumanTypesRepr).output, tokens[j]);
       const link = nftMeta.createType<StorageStateReply>((nftMeta.types.state as HumanTypesRepr).output, links[j]);
 
       const mediaLink = link.asIpfsFolderLink;
-
-      if (!link.isIpfsFolderLink) {
-        console.log(link.toHuman());
-      }
 
       if (data.isAllTokensRawData) {
         for (const { media, owner, activities } of data.asAllTokensRawData) {

@@ -3,7 +3,7 @@ import { readFileSync } from 'fs';
 
 import config from '../config';
 import { StateReply, StorageStateReply } from '../types';
-import { gearReadStateReq, getDate } from '../utils';
+import { gearReadStateBatchReq, gearReadStateReq, getDate } from '../utils';
 import { BatchState } from '../batchState';
 import { getCollectionDescription, getCollectionName } from './helpers';
 
@@ -27,37 +27,48 @@ export async function readMigratedNfts(state: BatchState) {
   const name = await getCollectionName(meta, config.nfts.cb);
   const collection = state.newCollection(config.nfts.cb, name, description);
 
-  for (let i = 0; i < storages.length; i++) {
-    console.log('Reading storage', i, 'of', storages.length);
+  const batchSize = 5;
+  for (let i = 0; i < storages.length; i += batchSize) {
+    console.log(`Reading storage ${i + 1} - ${i + batchSize} of ${storages.length}`);
 
-    const result = await gearReadStateReq(storages[i], '0x02');
+    console.log(storages.slice(i, i + batchSize));
+    const [tokens, links] = await Promise.all([
+      gearReadStateBatchReq(storages.slice(i, i + batchSize), '0x02'),
+      gearReadStateBatchReq(storages.slice(i, i + batchSize), '0x06'),
+    ]);
+    console.log(links);
 
-    const ipfsFolderLink = nftMeta
-      .createType((nftMeta.types.state as HumanTypesRepr).output, await gearReadStateReq(storages[i], '0x06'))
-      .toString();
+    for (let j = 0; j < batchSize; j++) {
+      const data = nftMeta.createType<StorageStateReply>((nftMeta.types.state as HumanTypesRepr).output, tokens[j]);
+      const link = nftMeta.createType<StorageStateReply>((nftMeta.types.state as HumanTypesRepr).output, links[j]);
 
-    const data = nftMeta.createType<StorageStateReply>((nftMeta.types.state as HumanTypesRepr).output, result);
-    if (data.isAllTokensRawData) {
-      for (const { media, owner, activities } of data.asAllTokensRawData) {
-        await state.mintNft(
-          media.toString(),
-          collection,
-          owner.toHex(),
-          activities.map(([name, times, ts]) => {
-            const timesFormatted = name.toString() === 'NFT minted' ? ', ' : ` ${times.toString()} times, `;
-            const date = getDate(ts.toString());
-            const dateFormatted = name.toString() === 'NFT minted' ? `date: ${date}` : `last game date: ${date}`;
-            return `${name}${timesFormatted}${dateFormatted}`;
-          }),
-          description,
-          name + ' - ' + media.toString(),
-          `${ipfsFolderLink}/${media.toString()}`,
-          blockNumber,
-          timestamp,
-        );
+      const mediaLink = link.asIpfsFolderLink;
+
+      if (!link.isIpfsFolderLink) {
+        console.log(link.toHuman());
+      }
+
+      if (data.isAllTokensRawData) {
+        for (const { media, owner, activities } of data.asAllTokensRawData) {
+          await state.mintNft(
+            media.toString(),
+            collection,
+            owner.toHex(),
+            activities.map(([name, times, ts]) => {
+              const timesFormatted = name.toString() === 'NFT minted' ? ', ' : ` ${times.toString()} times, `;
+              const date = getDate(ts.toString());
+              const dateFormatted = name.toString() === 'NFT minted' ? `date: ${date}` : `last game date: ${date}`;
+              return `${name}${timesFormatted}${dateFormatted}`;
+            }),
+            description,
+            name + ' - ' + media.toString(),
+            `${mediaLink}/${media.toString()}.png`,
+            blockNumber,
+            timestamp,
+          );
+        }
       }
     }
   }
-
   await state.save();
 }

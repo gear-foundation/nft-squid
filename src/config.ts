@@ -12,11 +12,13 @@ config();
 export default {
   nfts: {
     cb: getEnv('NFT_CB'),
-    vit: getEnv('NFT_VIT'),
-    draft: getEnv('NFT_DRAFT'),
-    vitMigratedAtBlock: getEnv('VIT_MIGRATED_AT_BLOCK'),
-    vitMigratedTS: Number(getEnv('VIT_MIGRATED_TS')),
-    readMigrateNfts: Boolean(getEnv('READ_MIGRATED_NFTS', '')),
+    vit: getEnv('NFT_VIT', ''),
+    draft: getEnv('NFT_DRAFT', ''),
+    vitMigratedAtBlock: getEnv('VIT_MIGRATED_AT_BLOCK', '0'),
+    cbMigratedAtBlock: getEnv('CB_MIGRATED_AT_BLOCK', '0'),
+    vitMigratedTS: Number(getEnv('VIT_MIGRATED_TS', '0')),
+    cbMigratedTs: Number(getEnv('CB_MIGRATED_TS', '0')),
+    readMigratedNfts: Boolean(getEnv('READ_MIGRATED_NFTS', '')),
     old: getEnv('NFT_OLD', ''),
   },
   squid: {

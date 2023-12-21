@@ -4,7 +4,7 @@ import { UserMessageSentArgs } from './types';
 import config from './config';
 import { BatchState } from './batchState';
 import { cbNftHandler } from './handlers/cb-nft';
-import { readMigratedNfts } from './handlers/vit-nft';
+import { readMigratedNfts } from './handlers/migrated-nft';
 import { draftNftHandler } from './handlers/draft-nft';
 
 const programs = [config.nfts.cb, config.nfts.vit];
@@ -14,7 +14,7 @@ if (config.nfts.old !== '') {
   simpleNfts.push(...config.nfts.old.split(','));
 }
 
-let isMigratedNftsSaved = !config.nfts.readMigrateNfts;
+let isMigratedNftsSaved = !config.nfts.readMigratedNfts;
 
 const state = new BatchState();
 

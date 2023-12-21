@@ -29,6 +29,8 @@ export async function readMigratedNfts(state: BatchState) {
 
   const batchSize = 5;
   for (let i = 0; i < storages.length; i += batchSize) {
+    console.log(`Reading storage ${i + 1} - ${i + batchSize} of ${storages.length}`);
+
     const [tokens, links] = await Promise.all([
       gearReadStateBatchReq(storages.slice(i, i + batchSize), '0x02'),
       gearReadStateBatchReq(storages.slice(i, i + batchSize), '0x06'),

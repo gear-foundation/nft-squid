@@ -1,27 +1,21 @@
+import { SubstrateBatchProcessor } from '@subsquid/substrate-processor';
 import { lookupArchive } from '@subsquid/archive-registry';
-import {
-  BatchContext,
-  BatchProcessorCallItem,
-  BatchProcessorEventItem,
-  BatchProcessorItem,
-  SubstrateBatchProcessor,
-} from '@subsquid/substrate-processor';
+
 import config from './config';
+
+export const indexedNfts = [config.nfts.cb, config.nfts.vit, config.nfts.draft];
+
+if (config.nfts.old !== '') {
+  indexedNfts.push(...config.nfts.old.split(','));
+}
 
 export const processor = new SubstrateBatchProcessor()
   .setDataSource({
-    archive: config.archive.uri,
-  })
-  .addEvent('Gear.UserMessageSent', {
-    data: {
-      event: {
-        args: true,
-      },
+    archive: lookupArchive(config.squid.archive, { release: 'ArrowSquid' }),
+    chain: {
+      url: config.squid.node,
     },
-  } as const)
-  .setBlockRange({ from: config.archive.fromBlock });
-
-export type Item = BatchProcessorItem<typeof processor>;
-export type EventItem = BatchProcessorEventItem<typeof processor>;
-export type CallItem = BatchProcessorCallItem<typeof processor>;
-export type ProcessorContext<Store> = BatchContext<Store, Item>;
+  })
+  .setFields({ event: { args: true }, block: { timestamp: true } })
+  .addGearUserMessageSent({ programId: indexedNfts })
+  .setBlockRange({ from: config.squid.fromBlock });

@@ -1,4 +1,3 @@
-import { CreateType } from '@gear-js/api';
 import config from './config';
 
 export function getDate(ts: string) {

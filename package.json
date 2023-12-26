@@ -22,7 +22,8 @@
     "@subsquid/typeorm-store": "^1.2.4",
     "dotenv": "^16.0.0",
     "pg": "8.9.0",
-    "typeorm": "^0.3.17"
+    "typeorm": "^0.3.17",
+    "winston": "^3.11.0"
   },
   "devDependencies": {
     "@polkadot/types": "^10.10.1",

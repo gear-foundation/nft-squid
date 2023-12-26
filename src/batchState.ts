@@ -2,6 +2,7 @@ import { Store } from '@subsquid/typeorm-store';
 import { Account, Nft, NftCollection, Transfer } from './model';
 import { randomUUID } from 'crypto';
 import { In } from 'typeorm';
+import { logger } from './logger';
 
 export class BatchState {
   private nfts: Map<string, Nft>;
@@ -131,6 +132,8 @@ export class BatchState {
       : await this.getNft(id);
 
     nft.attribUrl = attribUrl;
+
+    logger.info('Mint', { owner: ownerAddress, collection: collection.id, id });
 
     this.nfts.set(`${collection.id}-${tokenId}`, nft);
   }

@@ -1,7 +1,8 @@
 import { Store } from '@subsquid/typeorm-store';
-import { Account, Nft, NftCollection, Transfer } from './model';
 import { randomUUID } from 'crypto';
 import { In } from 'typeorm';
+
+import { Account, Nft, NftCollection, Transfer } from './model';
 import { logger } from './logger';
 
 export class BatchState {
@@ -32,20 +33,25 @@ export class BatchState {
   async save() {
     if (this.accounts.size > 0) {
       await this.store.save(Array.from(this.accounts.values()));
+      logger.info('Accounts saved', { count: this.accounts.size });
     }
     if (this.collections.size > 0) {
       await this.store.save(Array.from(this.collections.values()));
+      logger.info('Collections saved', { count: this.collections.size });
     }
     if (this.nfts.size > 0) {
       await this.store.save(Array.from(this.nfts.values()));
+      logger.info('Nfts saved', { count: this.nfts.size });
     }
     if (this.transfers.size > 0) {
       await this.store.save(Array.from(this.transfers.values()));
+      logger.info('Transfers saved', { count: this.transfers.size });
     }
     if (this.burntNfts.size > 0) {
       const transfers = await this.store.findBy(Transfer, { nft: { id: In(Array.from(this.burntNfts.keys())) } });
       await this.store.remove(transfers);
       await this.store.remove(Array.from(this.burntNfts.values()));
+      logger.info('Nfts deleted', { count: this.burntNfts.size, transfersCount: transfers.length });
     }
   }
 
@@ -116,6 +122,7 @@ export class BatchState {
     const id = `${collection.id}-${tokenId}`;
 
     const owner = await this.getAccount(ownerAddress);
+
     let nft = mint
       ? new Nft({
           id,
@@ -131,9 +138,18 @@ export class BatchState {
         })
       : await this.getNft(id);
 
+    if (!nft) {
+      logger.error('NFT not found', { id: id, block: blockNumber.toString() });
+      return;
+    }
+
     nft.attribUrl = attribUrl;
 
-    logger.info('Mint', { owner: ownerAddress, collection: collection.id, id });
+    logger.info(mint ? 'Mint' : 'Nft Changed', {
+      id,
+      owner: ownerAddress,
+      block: blockNumber.toString(),
+    });
 
     this.nfts.set(`${collection.id}-${tokenId}`, nft);
   }

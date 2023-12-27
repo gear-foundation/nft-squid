@@ -3,6 +3,7 @@ import { Hash } from '@polkadot/types/interfaces';
 import { ITuple } from '@polkadot/types/types';
 
 export interface InnerTokenMeta extends Struct {
+  tokenId: u32;
   media: u32;
   owner: Hash;
   activities: Vec<ITuple<[Text, u16, u64]>>;

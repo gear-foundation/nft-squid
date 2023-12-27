@@ -35,14 +35,14 @@ processor.run(new TypeormDatabase(), async (ctx) => {
       if (event.name !== 'Gear.UserMessageSent') continue;
 
       const {
-        message: { source, payload, details },
+        message: { source, payload, details, id },
       } = event.args as UserMessageSentArgs;
 
       if (payload === '0x') continue;
       if (details && details.code.__kind !== 'Success') continue;
 
       if (programs.includes(source)) {
-        await cbNftHandler(state, payload, source, blockNumber, ts);
+        await cbNftHandler(state, id, payload, source, blockNumber, ts);
       } else if (simpleNfts.includes(source)) {
         await draftNftHandler(state, payload, source, blockNumber, ts);
       }

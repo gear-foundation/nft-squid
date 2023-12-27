@@ -43,9 +43,9 @@ export async function readMigratedNfts(state: BatchState) {
       const mediaLink = link.asIpfsFolderLink;
 
       if (data.isAllTokensRawData) {
-        for (const { media, owner, activities } of data.asAllTokensRawData) {
+        for (const { media, owner, activities, tokenId } of data.asAllTokensRawData) {
           await state.mintNft(
-            media.toString(),
+            tokenId.toString(),
             collection,
             owner.toHex(),
             activities.map(([name, times, ts]) => {
@@ -55,7 +55,7 @@ export async function readMigratedNfts(state: BatchState) {
               return `${name}${timesFormatted}${dateFormatted}`;
             }),
             description,
-            name + ' - ' + media.toString(),
+            name + ' - ' + tokenId.toString(),
             `${mediaLink}/${media.toString()}.png`,
             blockNumber,
             timestamp,

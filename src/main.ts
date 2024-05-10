@@ -18,7 +18,7 @@ let isMigratedNftsSaved = !config.nfts.readMigratedNfts;
 
 const state = new BatchState();
 
-processor.run(new TypeormDatabase(), async (ctx) => {
+processor.run(new TypeormDatabase({ supportHotBlocks: false }), async (ctx) => {
   state.newBatch(ctx.store);
 
   if (!isMigratedNftsSaved) {

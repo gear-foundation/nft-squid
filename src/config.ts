@@ -25,6 +25,7 @@ export default {
     archive: getEnv('SQUID_ARCHIVE'),
     node: getEnv('VARA_NODE'),
     fromBlock: Number(getEnv('INDEX_FROM_BLOCK', '0')),
+    rateLimit: Number(getEnv('RATE_LIMIT', '40')),
   },
   node: {
     address: getEnv('NODE_ADDRESS'),

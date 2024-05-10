@@ -10,11 +10,10 @@ if (config.nfts.old !== '') {
 }
 
 export const processor = new SubstrateBatchProcessor()
-  .setDataSource({
-    archive: lookupArchive(config.squid.archive, { release: 'ArrowSquid' }),
-    chain: {
-      url: config.squid.node,
-    },
+  .setGateway(lookupArchive(config.squid.archive, { release: 'ArrowSquid' }))
+  .setRpcEndpoint({
+    url: config.squid.node,
+    rateLimit: config.squid.rateLimit,
   })
   .setFields({ event: { args: true }, block: { timestamp: true } })
   .addGearUserMessageSent({ programId: indexedNfts })
